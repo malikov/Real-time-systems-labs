@@ -46,70 +46,29 @@ Servo rightWheelServo;
 *  Motors :     left, right
 */
 
-#define MacroStopMotorLeft() analogWrite(motor_left_pin, 0)
-#define MacroStopMotorRight() analogWrite(motor_right_pin, 0)
+#define MacroStopMotorLeft() //leftWheelServo.write(90)
+#define MacroStopMotorRight() //rightWheelServo.write(90)
 
-#define MacroForwardMotorLeft() leftWheelServo.write(180)
-#define MacroForwardMotorRight() rightWheelServo.write(0)
+#define MacroForwardMotorLeft() //leftWheelServo.write(180)  
+#define MacroForwardMotorRight() //rightWheelServo.write(0) 
 
-#define MacroBackwardMotorLeft() leftWheelServo.write(0)
-#define MacroBackwardMotorRight() rightWheelServo.write(180)
+#define MacroBackwardMotorLeft() //leftWheelServo.write(0) 
+#define MacroBackwardMotorRight() //rightWheelServo.write(180)
 
 
 
 // The setup routine runs once when you press reset:
 // This function is called before the loop() function
 void setup(){
+  leftWheelServo.attach(motor_left_pin,544,2400);
+  rightWheelServo.attach(motor_right_pin,544,2400);
+  
   // Initialization instructions
+  //leftWheelServo.writeMicroseconds(0);
+  //delay(15); 
   
-  // Sets the digital pin as output
-  pinMode(motor_left_pin, OUTPUT);
-  pinMode(motor_right_pin, OUTPUT);      
-  pinMode(board_LED,OUTPUT);
-  pinMode(LCD_display, OUTPUT);
-  
- 
-  
-  // Open the serial port at 9600 bps
-  Serial.begin(9600);
-  
-  // Open the serial port to write data at 9600 bps
-  LCD.begin(9600);
- 
- 
-  //Loop for the led - total time 5000s
-  for (int i = 0; i < 5; i++) {
-    // turn the LED on:
-    digitalWrite(board_LED, HIGH);
-    delay(timer);
-    // turn the LED off:
-    digitalWrite(board_LED, LOW);
-    delay(timer);
-  }
-  
-  
-  lcdDisplay("7528357",4, "7528357",4);
-  delay(5000);
-   
-  int bottomToTopRound = 4*timer;
-  
-  /******************************************/
-  // Path
-  lcdDisplay("Path ",5, "",1);
-  delay(3000);
-
-  
-  //moveForward(2*timer);  
-  /*rotateClockwise(2*rotation_45);  // left
-  moveForward(5*timer);  
-  rotateCounterClockwise(2*rotation_45); // right
-  moveForward(5*timer);  
-  rotateCounterClockwise(2*rotation_45);     // right
-  moveForward(5*timer);  
-  rotateClockwise(2*rotation_45);     // left
-  moveForward(5*timer);  
-  stopped(4*rotation_45);
- */
+  //rightWheelServo.writeMicroseconds(0);
+  //delay(15); 
   
 }
 
@@ -118,8 +77,42 @@ void setup(){
 
 // The loop routine runs over and over again forever:
 void loop(){ 
-  moveForward(5*timer);  
+  
+  uint8_t readValue = leftWheelServo.read();
+  int microsecondsLeftVal = leftWheelServo.readMicroseconds();
+  
+  Serial.println("Servo's default read value for the leftWheel in angle");
+  Serial.println(readValue);
+  
+  Serial.println("Servo's default read value for the leftWheel in microseconds");
+  Serial.println(microsecondsLeftVal);
+  
+  delay(timer);
+  
+  uint8_t readValueRight = rightWheelServo.read();
+  int microsecondsRightVal = rightWheelServo.readMicroseconds();
+  
+  Serial.println("Servo's default read value for the rightWheel");
+  Serial.println(readValueRight);
+  
+  Serial.println("Servo's default read value for the rightWheel in microseconds");
+  Serial.println(microsecondsRightVal);
+  
+  delay(2*timer);
+  
+  leftWheelServo.writeMicroseconds(0);
+  rightWheelServo.writeMicroseconds(0);
+  
+  //leftWheelServo.write(90);
+ /* moveForward(5*timer);  
+  leftWheelServo.detach();
+  rightWheelServo.detach(); 
+  
   stopped(4*timer);
+  
+  rightWheelServo.attach(motor_right_pin); 
+  stopped(4*timer);*/
+  
 }
 
 
@@ -217,7 +210,6 @@ void lcdDisplay(String topLine, int topLineOffset, String bottomLine, int bottom
 }
 
 void lcdPosition(int row, int col) {
-  LCD.write(0x01); // Clear the LCD screen
   LCD.write(0xFE); //Put LCD in command mode
   LCD.write((col + row*64 + 128)); //Place the cursor
   delay(10);
